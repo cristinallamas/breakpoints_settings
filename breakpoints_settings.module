@@ -24,16 +24,23 @@ function breakpoints_settings_help($route_name, RouteMatchInterface $route_match
 }
 
 function breakpoints_settings_page_attachments(array &$page) {
+  // Grabbing all breakpoint groups by provider
+  $groups = \Drupal::service('breakpoint.manager')->getGroups();
+  $js_breakpoints = array();
 
-  $default_theme = \Drupal::config('system.theme')->get('default');
-  $breakpoints = \Drupal::service('breakpoint.manager')->getBreakpointsByGroup($default_theme);
-  if (!empty($breakpoints)) {
-    foreach ($breakpoints as $id => $breakpoint) {
-      $labels [] = $breakpoint->getLabel();
-      $medias [] = $breakpoint->getMediaQuery();
+  if (!empty($groups)) {
+    // Run through all group breakpoints and load them.
+    foreach ($groups as $group_id => $group) {
+      $breakpoints = \Drupal::service('breakpoint.manager')->getBreakpointsByGroup($group_id);
+      foreach ($breakpoints as $id => $breakpoint) {
+        // Todo remove combine.
+        $labels [] = $breakpoint->getLabel();
+        $medias [] = $breakpoint->getMediaQuery();
+        $combine = array_combine($labels, $medias);
+        // Nest breakpoints by group with the label as key and query as value.
+        $js_breakpoints[$group_id] = $combine;
+      }
+      $page['#attached']['drupalSettings']['breakpoints_settings'] = $js_breakpoints;
     }
-    // TODO combine this inside the foreach.
-    $combine = array_combine($labels, $medias);
-    $page['#attached']['drupalSettings']['breakpoints_settings'] = $combine;
   }
 }

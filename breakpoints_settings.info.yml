@@ -6,4 +6,3 @@ package: Custom
 
 dependencies:
   - breakpoint
-  - core/drupalSettings
