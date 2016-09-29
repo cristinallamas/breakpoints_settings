@@ -1,0 +1,9 @@
+name: breakpoints_settings
+type: module
+description: Add breakpoints to Drupal.settings array.
+core: 8.x
+package: Custom
+
+dependencies:
+  - breakpoint
+  - core/drupalSettings

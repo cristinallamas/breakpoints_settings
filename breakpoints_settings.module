@@ -1,0 +1,39 @@
+<?php
+
+/**
+ * @file
+ * Contains breakpoints_settings.module..
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function breakpoints_settings_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the breakpoints_settings module.
+    case 'help.page.breakpoints_settings':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Breakpoints Settings') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+function breakpoints_settings_page_attachments(array &$page) {
+
+  $default_theme = \Drupal::config('system.theme')->get('default');
+  $breakpoints = \Drupal::service('breakpoint.manager')->getBreakpointsByGroup($default_theme);
+  if (!empty($breakpoints)) {
+    foreach ($breakpoints as $id => $breakpoint) {
+      $labels [] = $breakpoint->getLabel();
+      $medias [] = $breakpoint->getMediaQuery();
+    }
+    // TODO combine this inside the foreach.
+    $combine = array_combine($labels, $medias);
+    $page['#attached']['drupalSettings']['breakpoints_settings'] = $combine;
+  }
+}
